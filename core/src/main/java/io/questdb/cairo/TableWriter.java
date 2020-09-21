@@ -2431,6 +2431,7 @@ public class TableWriter implements Closeable {
             long indexLo = 0;
             long indexHi;
             long indexMax = mergeRowCount;
+            long ooTimestampMin = getTimestampIndexValue(mergedTimestamps, 0);
             long ooTimestampHi = getTimestampIndexValue(mergedTimestamps, indexMax - 1);
 
             while (true) {
@@ -2459,7 +2460,7 @@ public class TableWriter implements Closeable {
                 // if so we do not need to re-open files and and write to existing file descriptors
 
 
-                if (partitionTimestampHi > ceilOfMaxTimestamp) {
+                if (partitionTimestampHi > ceilOfMaxTimestamp || partitionTimestampHi < timestampFloorMethod.floor(minTimestamp)) {
 
                     // this has to be a brand new partition
                     LOG.info().$("copy oo to [path=").$(path).$(", from=").$(indexLo).$(", to=").$(indexHi).$(']').$();
@@ -2621,7 +2622,6 @@ public class TableWriter implements Closeable {
                                         mergeOOOHi = indexHi;
                                         mergeDataHi = dataIndexMax - 1;
                                     }
-
                                 } else {
 
                                     //            +-----+
@@ -2634,10 +2634,8 @@ public class TableWriter implements Closeable {
                                     suffixType = 2;
                                     suffixLo = 0;
                                     suffixHi = dataIndexMax - 1;
-
                                 }
                             } else {
-
                                 if (ooTimestampLo <= dataTimestampLo) {
                                     //            +-----+
                                     //            | OOO |
@@ -2737,7 +2735,6 @@ public class TableWriter implements Closeable {
                                     }
                                 }
                             }
-
                         } finally {
                             // disconnect memory from fd, so that we don't accidentally close it
                             timestampSearchColumn.detach();
@@ -2761,74 +2758,7 @@ public class TableWriter implements Closeable {
                             }
 
                             if (mergeType == 3) {
-                                long dataOOMergeIndex = 0;
-                                long dataOOMergeIndexLen = mergeOOOHi - mergeOOOLo + 1 + mergeDataHi - mergeDataLo + 1;
-                                // copy timestamp column of the partition into a "index" memory
-
-                                long ss = Unsafe.malloc(TIMESTAMP_MERGE_ENTRY_BYTES * 2);
-                                try {
-                                    final long src = MergeStruct.getSrcFixedAddress(mergeStruct, timestampIndex);
-                                    // Create "index" for existing timestamp column. When we reshuffle timestamps during merge we will
-                                    // have to go back and find data rows we need to move accordingly
-                                    final long indexSize = (mergeDataHi - mergeDataLo + 1) * TIMESTAMP_MERGE_ENTRY_BYTES;
-                                    long index = Unsafe.malloc(indexSize);
-                                    try {
-                                        for (long l = mergeDataLo; l <= mergeDataHi; l++) {
-                                            Unsafe.getUnsafe().putLong(index + (l - mergeDataLo) * TIMESTAMP_MERGE_ENTRY_BYTES, Unsafe.getUnsafe().getLong(src + l * Long.BYTES));
-                                            Unsafe.getUnsafe().putLong(index + (l - mergeDataLo) * TIMESTAMP_MERGE_ENTRY_BYTES + Long.BYTES, l | (1L << 63));
-                                        }
-
-                                        Unsafe.getUnsafe().putLong(ss, index);
-                                        Unsafe.getUnsafe().putLong(ss + Long.BYTES, mergeDataHi - mergeDataLo + 1);
-                                        Unsafe.getUnsafe().putLong(ss + 2 * Long.BYTES, mergedTimestamps + mergeOOOLo * 16);
-                                        Unsafe.getUnsafe().putLong(ss + 3 * Long.BYTES, mergeOOOHi - mergeOOOLo + 1);
-
-                                        dataOOMergeIndex = Vect.mergeLongIndexesAsc(ss, 2);
-                                    } finally {
-                                        Unsafe.free(index, indexSize);
-                                    }
-
-                                    for (int i = 0; i < columnCount; i++) {
-
-                                        switch (metadata.getColumnType(i)) {
-                                            case ColumnType.BOOLEAN:
-                                            case ColumnType.BYTE:
-                                                mergeShuffle(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i, 0, MERGE_SHUFFLE_8);
-                                                break;
-                                            case ColumnType.SHORT:
-                                            case ColumnType.CHAR:
-                                                mergeShuffle(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i, 1, MERGE_SHUFFLE_16);
-                                                break;
-                                            case ColumnType.STRING:
-                                                mergeCopyStr(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i);
-                                                break;
-                                            case ColumnType.BINARY:
-                                                mergeCopyBin(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i);
-                                                break;
-                                            case ColumnType.INT:
-                                            case ColumnType.FLOAT:
-                                            case ColumnType.SYMBOL:
-                                                mergeShuffle(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i, 2, MERGE_SHUFFLE_32);
-                                                break;
-                                            case ColumnType.DOUBLE:
-                                            case ColumnType.LONG:
-                                            case ColumnType.DATE:
-                                            case ColumnType.TIMESTAMP:
-                                                if (i == timestampIndex) {
-                                                    // copy timestamp values from the merge index
-                                                    copyIndex(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i);
-                                                    break;
-                                                }
-                                                mergeShuffle(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i, 3, MERGE_SHUFFLE_64);
-                                                break;
-                                        }
-                                    }
-                                } finally {
-                                    Unsafe.free(ss, TIMESTAMP_MERGE_ENTRY_BYTES * 2);
-                                    if (dataOOMergeIndex > 0) {
-                                        Vect.freeMergedIndex(dataOOMergeIndex);
-                                    }
-                                }
+                                mergeOOAndShuffleColumns(timestampIndex, mergedTimestamps, mergeDataLo, mergeDataHi, mergeOOOLo, mergeOOOHi, mergeStruct);
 
                                 LOG.info()
                                         .$("merged data2 + ooo2 [dataFrom=").$(mergeDataLo)
@@ -2836,6 +2766,7 @@ public class TableWriter implements Closeable {
                                         .$(", oooFrom=").$(mergeOOOLo)
                                         .$(", oooTo=").$(mergeOOOHi)
                                         .$(']').$();
+
                             } else if (mergeType == 1) {
                                 LOG.info().$("copy data middle set [from=").$(mergeDataLo).$(", to=").$(mergeDataHi).$(']').$();
                                 copyPartitionData(mergeDataLo, mergeDataHi, mergeStruct);
@@ -2905,12 +2836,67 @@ public class TableWriter implements Closeable {
                     // data in existing partition.
                     // When partition is new, the data timestamp is MIN_LONG
                     maxTimestamp = Math.max(getTimestampIndexValue(mergedTimestamps, indexHi), dataTimestampHi);
+                    minTimestamp = Math.min(minTimestamp, ooTimestampMin);
                     break;
                 }
             }
         } finally {
             path.trimTo(rootLen);
             this.mergeRowCount = 0;
+        }
+    }
+
+    private void mergeOOAndShuffleColumns(int timestampIndex, long mergedTimestamps, long mergeDataLo, long mergeDataHi, long mergeOOOLo, long mergeOOOHi, long[] mergeStruct) {
+        final long dataOOMergeIndexLen = mergeOOOHi - mergeOOOLo + 1 + mergeDataHi - mergeDataLo + 1;
+        // copy timestamp column of the partition into a "index" memory
+
+        final long dataOOMergeIndex = mergeTimestampAndOutOfOrder(
+                timestampIndex,
+                mergedTimestamps,
+                mergeDataLo,
+                mergeDataHi,
+                mergeOOOLo,
+                mergeOOOHi,
+                mergeStruct
+        );
+
+        try {
+            for (int i = 0; i < columnCount; i++) {
+                switch (metadata.getColumnType(i)) {
+                    case ColumnType.BOOLEAN:
+                    case ColumnType.BYTE:
+                        mergeShuffle(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i, 0, MERGE_SHUFFLE_8);
+                        break;
+                    case ColumnType.SHORT:
+                    case ColumnType.CHAR:
+                        mergeShuffle(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i, 1, MERGE_SHUFFLE_16);
+                        break;
+                    case ColumnType.STRING:
+                        mergeCopyStr(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i);
+                        break;
+                    case ColumnType.BINARY:
+                        mergeCopyBin(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i);
+                        break;
+                    case ColumnType.INT:
+                    case ColumnType.FLOAT:
+                    case ColumnType.SYMBOL:
+                        mergeShuffle(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i, 2, MERGE_SHUFFLE_32);
+                        break;
+                    case ColumnType.DOUBLE:
+                    case ColumnType.LONG:
+                    case ColumnType.DATE:
+                    case ColumnType.TIMESTAMP:
+                        if (i == timestampIndex) {
+                            // copy timestamp values from the merge index
+                            copyIndex(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i);
+                            break;
+                        }
+                        mergeShuffle(mergeStruct, dataOOMergeIndex, dataOOMergeIndexLen, i, 3, MERGE_SHUFFLE_64);
+                        break;
+                }
+            }
+        } finally {
+            Vect.freeMergedIndex(dataOOMergeIndex);
         }
     }
 
@@ -2931,6 +2917,42 @@ public class TableWriter implements Closeable {
                 count
         );
         MergeStruct.setDestFixedAppendOffset(mergeStruct, columnIndex, offset + (count << shl));
+    }
+
+    private long mergeTimestampAndOutOfOrder(
+            int timestampIndex,
+            long mergedTimestamps,
+            long mergeDataLo,
+            long mergeDataHi,
+            long mergeOOOLo,
+            long mergeOOOHi,
+            long[] mergeStruct
+    ) {
+        // Create "index" for existing timestamp column. When we reshuffle timestamps during merge we will
+        // have to go back and find data rows we need to move accordingly
+        final long indexSize = (mergeDataHi - mergeDataLo + 1) * TIMESTAMP_MERGE_ENTRY_BYTES;
+        final long src = MergeStruct.getSrcFixedAddress(mergeStruct, timestampIndex);
+        final long indexStruct = Unsafe.malloc(TIMESTAMP_MERGE_ENTRY_BYTES * 2);
+        try {
+            long index = Unsafe.malloc(indexSize);
+            try {
+                for (long l = mergeDataLo; l <= mergeDataHi; l++) {
+                    Unsafe.getUnsafe().putLong(index + (l - mergeDataLo) * TIMESTAMP_MERGE_ENTRY_BYTES, Unsafe.getUnsafe().getLong(src + l * Long.BYTES));
+                    Unsafe.getUnsafe().putLong(index + (l - mergeDataLo) * TIMESTAMP_MERGE_ENTRY_BYTES + Long.BYTES, l | (1L << 63));
+                }
+
+                Unsafe.getUnsafe().putLong(indexStruct, index);
+                Unsafe.getUnsafe().putLong(indexStruct + Long.BYTES, mergeDataHi - mergeDataLo + 1);
+                Unsafe.getUnsafe().putLong(indexStruct + 2 * Long.BYTES, mergedTimestamps + mergeOOOLo * 16);
+                Unsafe.getUnsafe().putLong(indexStruct + 3 * Long.BYTES, mergeOOOHi - mergeOOOLo + 1);
+
+                return Vect.mergeLongIndexesAsc(indexStruct, 2);
+            } finally {
+                Unsafe.free(index, indexSize);
+            }
+        } finally {
+            Unsafe.free(indexStruct, TIMESTAMP_MERGE_ENTRY_BYTES * 2);
+        }
     }
 
     private void mergeTimestampSetter(long timestamp) {
