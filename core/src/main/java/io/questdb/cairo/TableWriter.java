@@ -1119,7 +1119,10 @@ public class TableWriter implements Closeable {
                 if (low < mid) {
                     low = mid;
                 } else {
-                    return getTimestampIndexValue(indexAddress, high) > value ? low : high;
+                    if (getTimestampIndexValue(indexAddress, high) > value) {
+                        return low;
+                    }
+                    return high;
                 }
             else if (midVal > value)
                 high = mid;
@@ -1131,7 +1134,10 @@ public class TableWriter implements Closeable {
                 return mid - scanDirection;
             }
         }
-        return -high;
+        if (getTimestampIndexValue(indexAddress, low) > value) {
+            return low - 1;
+        }
+        return low;
     }
 
     private static int msGetOffsetDataFd(int columnIndex) {
@@ -2492,6 +2498,12 @@ public class TableWriter implements Closeable {
             long ooTimestampMin = getTimestampIndexValue(mergedTimestamps, 0);
             long ooTimestampHi = getTimestampIndexValue(mergedTimestamps, indexMax - 1);
 
+            LOG.debug()
+                    .$("before loop [ooTimestampMin=").microTime(ooTimestampMin)
+                    .$(", ooTimestampHi=").microTime(ooTimestampHi)
+                    .$(", ceilOfMaxTimestamp=").microTime(ceilOfMaxTimestamp)
+                    .$(']').$();
+
             while (true) {
                 long ooTimestampLo = getTimestampIndexValue(mergedTimestamps, indexLo);
 
@@ -2500,14 +2512,32 @@ public class TableWriter implements Closeable {
                 int plen = path.length();
 
                 final long partitionTimestampHi = this.partitionHi;
+                final long floorMinTimestamp = timestampFloorMethod.floor(minTimestamp);
 
                 // find "current" partition boundary in the out of order data
                 // once we know the boundary we can move on to calculating another one
+                // indexHi is index inclusive of value
                 if (ooTimestampHi > partitionTimestampHi) {
                     indexHi = searchIndex(mergedTimestamps, partitionTimestampHi, indexLo, indexMax - 1, BinarySearch.SCAN_DOWN);
+                    LOG.debug()
+                            .$("oo overflows partition [indexHi=").$(indexHi)
+                            .$(", indexHiTimestamp=").microTime(getTimestampIndexValue(mergedTimestamps, indexHi))
+                            .$(", ooTimestampLo=").microTime(ooTimestampLo)
+                            .$(", indexLo=").$(indexLo)
+                            .$(", partitionTimestampHi=").microTime(partitionTimestampHi)
+                            .$(", minTimestamp=").microTime(minTimestamp)
+                            .$(']').$();
                 } else {
                     indexHi = indexMax - 1;
+                    LOG.debug()
+                            .$("using OO as a whole [indexHi=").$(indexHi)
+                            .$(", ooTimestampLo=").microTime(ooTimestampLo)
+                            .$(", indexLo=").$(indexLo)
+                            .$(", partitionTimestampHi=").microTime(partitionTimestampHi)
+                            .$(", minTimestamp=").microTime(minTimestamp)
+                            .$(']').$();
                 }
+
 
                 long fd = 0;
                 long dataTimestampLo;
@@ -2518,7 +2548,7 @@ public class TableWriter implements Closeable {
                 // if so we do not need to re-open files and and write to existing file descriptors
 
 
-                if (partitionTimestampHi > ceilOfMaxTimestamp || partitionTimestampHi < timestampFloorMethod.floor(minTimestamp)) {
+                if (partitionTimestampHi > ceilOfMaxTimestamp || partitionTimestampHi < floorMinTimestamp) {
 
                     // this has to be a brand new partition
                     LOG.info().$("copy oo to [path=").$(path).$(", from=").$(indexLo).$(", to=").$(indexHi).$(']').$();
@@ -2549,6 +2579,7 @@ public class TableWriter implements Closeable {
                             dataTimestampHi = this.maxTimestamp;
                             dataIndexMax = transientRowCountBeforeOutOfOrder;
                             fd = -columns.getQuick(getPrimaryColumnIndex(timestampIndex)).getFd();
+                            LOG.debug().$("reused FDs").$();
                         } else {
 
                             // out of order data is going into archive partition
@@ -2578,6 +2609,8 @@ public class TableWriter implements Closeable {
                         }
 
                         dataTimestampLo = Unsafe.getUnsafe().getLong(tempMem8b);
+
+                        LOG.debug().$("read data top [dataTimestampLo=").microTime(dataTimestampLo).$(']').$();
 
                         // create copy jobs
                         // we will have maximum of 3 stages:
@@ -2646,8 +2679,14 @@ public class TableWriter implements Closeable {
                                         // |      |
                                         // +------+
 
+                                        mergeType = OO_BLOCK_MERGE;
                                         mergeOOOHi = indexHi;
                                         mergeDataHi = BinarySearch.find(timestampSearchColumn, ooTimestampHi, 0, dataIndexMax - 1, BinarySearch.SCAN_DOWN);
+
+                                        suffixLo = mergeDataHi + 1;
+                                        suffixType = OO_BLOCK_DATA;
+                                        suffixHi = dataIndexMax - 1;
+
                                     } else if (ooTimestampHi > dataTimestampHi) {
 
                                         // |      | |     |
@@ -2657,17 +2696,15 @@ public class TableWriter implements Closeable {
                                         //          +-----+
 
                                         mergeDataHi = dataIndexMax - 1;
+                                        mergeOOOHi = searchIndex(mergedTimestamps, dataTimestampHi - 1, mergeOOOLo, indexHi, BinarySearch.SCAN_DOWN) + 1;
 
-                                        // check if data is regressed to single timestamp
-                                        if (dataTimestampLo == dataTimestampHi) {
-                                            mergeType = OO_BLOCK_DATA;
-                                            suffixLo = Math.min(prefixHi + 1, indexHi);
-                                        } else {
+                                        if (mergeOOOLo < mergeOOOHi) {
                                             mergeType = OO_BLOCK_MERGE;
-                                            mergeOOOHi = searchIndex(mergedTimestamps, dataTimestampHi, mergeOOOLo, indexHi, BinarySearch.SCAN_UP);
-                                            suffixLo = mergeOOOHi + 1;
+                                        } else {
+                                            mergeType = OO_BLOCK_DATA;
+                                            mergeOOOHi--;
                                         }
-
+                                        suffixLo = mergeOOOHi + 1;
                                         suffixType = OO_BLOCK_OO;
                                         suffixHi = indexHi;
                                     } else {
@@ -2677,6 +2714,7 @@ public class TableWriter implements Closeable {
                                         // | data | |     |
                                         // +------+ +-----+
 
+                                        mergeType = OO_BLOCK_MERGE;
                                         mergeOOOHi = indexHi;
                                         mergeDataHi = dataIndexMax - 1;
                                     }
@@ -2727,7 +2765,7 @@ public class TableWriter implements Closeable {
 
                                         prefixType = OO_BLOCK_DATA;
                                         prefixLo = 0;
-                                        prefixHi = BinarySearch.find(timestampSearchColumn, ooTimestampLo, 0, dataIndexMax - 1, BinarySearch.SCAN_UP);
+                                        prefixHi = BinarySearch.find(timestampSearchColumn, ooTimestampLo, 0, dataIndexMax - 1, BinarySearch.SCAN_DOWN);
                                         mergeDataLo = prefixHi + 1;
                                         mergeOOOLo = indexLo;
 
@@ -2740,7 +2778,17 @@ public class TableWriter implements Closeable {
                                             // +------+
 
                                             mergeOOOHi = indexHi;
-                                            mergeDataHi = BinarySearch.find(timestampSearchColumn, ooTimestampHi, mergeDataLo, dataIndexMax - 1, BinarySearch.SCAN_DOWN);
+                                            mergeDataHi = BinarySearch.find(timestampSearchColumn, ooTimestampHi - 1, mergeDataLo, dataIndexMax - 1, BinarySearch.SCAN_DOWN) + 1;
+
+                                            if (mergeDataLo < mergeDataHi) {
+                                                mergeType = OO_BLOCK_MERGE;
+                                            } else {
+                                                // the OO data implodes right between rows of existing data
+                                                // so we will have both data prefix and suffix and the middle bit
+                                                // is the out of order
+                                                mergeType = OO_BLOCK_OO;
+                                                mergeDataHi--;
+                                            }
 
                                             suffixType = OO_BLOCK_DATA;
                                             suffixLo = mergeDataHi + 1;
@@ -2771,6 +2819,7 @@ public class TableWriter implements Closeable {
                                             // +------+ +-----+
                                             //
 
+                                            mergeType = OO_BLOCK_MERGE;
                                             mergeOOOHi = indexHi;
                                             mergeDataHi = dataIndexMax - 1;
                                         }
@@ -2840,11 +2889,23 @@ public class TableWriter implements Closeable {
                                             .$(", oooFrom=").$(mergeOOOLo)
                                             .$(", oooTo=").$(mergeOOOHi)
                                             .$(']').$();
-                                    mergeOOAndShuffleColumns(timestampIndex, mergedTimestamps, mergeDataLo, mergeDataHi, mergeOOOLo, mergeOOOHi, mergeStruct);
+                                    mergeOOAndShuffleColumns(
+                                            timestampIndex,
+                                            mergedTimestamps,
+                                            mergeDataLo,
+                                            mergeDataHi,
+                                            mergeOOOLo,
+                                            mergeOOOHi,
+                                            mergeStruct
+                                    );
                                     break;
                                 case OO_BLOCK_DATA:
                                     LOG.info().$("copy data middle set [from=").$(mergeDataLo).$(", to=").$(mergeDataHi).$(']').$();
                                     copyPartitionData(mergeDataLo, mergeDataHi, mergeStruct);
+                                    break;
+                                case OO_BLOCK_OO:
+                                    LOG.info().$("copy OO middle set [from=").$(mergeOOOLo).$(", to=").$(mergeOOOHi).$(']').$();
+                                    copyOutOfOrderData(mergeOOOLo, mergeOOOHi, mergeStruct, timestampIndex);
                                     break;
                                 default:
                                     break;
@@ -2878,7 +2939,7 @@ public class TableWriter implements Closeable {
                 }
 
                 final long partitionSize = dataIndexMax + indexHi - indexLo + 1;
-                if (indexHi + 1 < indexMax) {
+                if (indexHi + 1 < indexMax || partitionTimestampHi < floorMinTimestamp) {
 
                     fixedRowCount += partitionSize;
                     if (partitionTimestampHi < ceilOfMaxTimestamp) {
@@ -2909,6 +2970,15 @@ public class TableWriter implements Closeable {
                         txPendingPartitionSizes.putLong128(partitionSize, partitionTimestampHi);
                     }
 
+                    if (indexHi + 1 >= indexMax) {
+                        // no more out of order data and we just pre-pended data to existing
+                        // partitions
+                        minTimestamp = Math.min(minTimestamp, ooTimestampMin);
+                        // when we exit here we need to rollback transientRowCount we've been incrementing
+                        // while adding out-of-order data
+                        transientRowCount = transientRowCountBeforeOutOfOrder;
+                        break;
+                    }
                     indexLo = indexHi + 1;
                 } else {
                     transientRowCount = partitionSize;
