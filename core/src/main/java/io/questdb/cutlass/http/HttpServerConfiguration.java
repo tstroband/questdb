@@ -79,4 +79,6 @@ public interface HttpServerConfiguration extends WorkerPoolAwareConfiguration {
     boolean getServerKeepAlive();
 
     String getHttpVersion();
+
+    String getPathPrefix();
 }

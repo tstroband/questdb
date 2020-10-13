@@ -159,7 +159,7 @@ public class HttpServer implements Closeable {
 
             @Override
             public String getUrl() {
-                return "/exec";
+                return configuration.getPathPrefix() + "exec";
             }
         });
 
@@ -171,7 +171,7 @@ public class HttpServer implements Closeable {
 
             @Override
             public String getUrl() {
-                return "/imp";
+                return configuration.getPathPrefix() + "imp";
             }
         });
 
@@ -189,7 +189,7 @@ public class HttpServer implements Closeable {
 
             @Override
             public String getUrl() {
-                return "/exp";
+                return configuration.getPathPrefix() + "exp";
             }
         });
 
@@ -201,7 +201,7 @@ public class HttpServer implements Closeable {
 
             @Override
             public String getUrl() {
-                return "/chk";
+                return configuration.getPathPrefix() + "chk";
             }
         });
 

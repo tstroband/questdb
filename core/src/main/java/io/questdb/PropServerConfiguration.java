@@ -260,6 +260,7 @@ public class PropServerConfiguration implements ServerConfiguration {
     private String lineTcpAuthDbPath;
     private String httpVersion;
     private final Log log;
+    private String httpPathPrefix;
 
     public PropServerConfiguration(
             String root,
@@ -289,8 +290,17 @@ public class PropServerConfiguration implements ServerConfiguration {
             this.httpAllowDeflateBeforeSend = getBoolean(properties, env, "http.allow.deflate.before.send", false);
             this.httpServerKeepAlive = getBoolean(properties, env, "http.server.keep.alive", true);
             this.httpVersion = getString(properties, env, "http.version", "HTTP/1.1");
+
             if (!httpVersion.endsWith(" ")) {
                 httpVersion += ' ';
+            }
+
+            this.httpPathPrefix = getString(properties, env, "http.path.prefix", "/");
+            if (!httpPathPrefix.startsWith("/") && httpPathPrefix.length() > 0) {
+                httpPathPrefix = '/' + httpPathPrefix;
+            }
+            if (!httpPathPrefix.endsWith("/") && httpPathPrefix.length() > 0) {
+                httpPathPrefix += '/';
             }
 
             int keepAliveTimeout = getInt(properties, env, "http.keep-alive.timeout", 5);
@@ -1079,6 +1089,11 @@ public class PropServerConfiguration implements ServerConfiguration {
         @Override
         public String getHttpVersion() {
             return httpVersion;
+        }
+
+        @Override
+        public String getPathPrefix() {
+            return httpPathPrefix;
         }
 
         @Override

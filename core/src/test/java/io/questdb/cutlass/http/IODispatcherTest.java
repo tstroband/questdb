@@ -259,7 +259,7 @@ public class IODispatcherTest {
     public void testExistentCheckBadArg() throws Exception {
         testJsonQuery(
                 20,
-                "GET /chk?f=json&x=clipboard-1580645706714&_=1580598041784 HTTP/1.1\r\n" +
+                "GET /some/chk?f=json&x=clipboard-1580645706714&_=1580598041784 HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -267,7 +267,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: _ga=GA1.1.2124932001.1573824669; _gid=GA1.1.1731187971.1580598042\r\n" +
@@ -290,7 +290,7 @@ public class IODispatcherTest {
     public void testExistentCheckDoesNotExist() throws Exception {
         testJsonQuery(
                 20,
-                "GET /chk?f=json&j=clipboard-1580645706714&_=1580598041784 HTTP/1.1\r\n" +
+                "GET /some/chk?f=json&j=clipboard-1580645706714&_=1580598041784 HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -298,7 +298,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: _ga=GA1.1.2124932001.1573824669; _gid=GA1.1.1731187971.1580598042\r\n" +
@@ -321,7 +321,7 @@ public class IODispatcherTest {
     public void testExistentCheckExists() throws Exception {
         testJsonQuery(
                 20,
-                "GET /chk?f=json&j=x HTTP/1.1\r\n" +
+                "GET /some/chk?f=json&j=x HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -329,7 +329,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: _ga=GA1.1.2124932001.1573824669; _gid=GA1.1.1731187971.1580598042\r\n" +
@@ -352,7 +352,7 @@ public class IODispatcherTest {
     public void testExistentCheckExistsPlain() throws Exception {
         testJsonQuery(
                 20,
-                "GET /chk?j=x HTTP/1.1\r\n" +
+                "GET /some/chk?j=x HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -360,7 +360,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: _ga=GA1.1.2124932001.1573824669; _gid=GA1.1.1731187971.1580598042\r\n" +
@@ -1835,7 +1835,7 @@ public class IODispatcherTest {
     public void testJsonQueryBadUtf8() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=�������&limit=10 HTTP/1.1\r\n" +
+                "GET /some/query?query=�������&limit=10 HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -1863,7 +1863,7 @@ public class IODispatcherTest {
     public void testJsonQueryBottomLimit() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x&limit=10,25 HTTP/1.1\r\n" +
+                "GET /some/query?query=x&limit=10,25 HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -1894,7 +1894,7 @@ public class IODispatcherTest {
             // create table
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0A%0Acreate+table+balances_x+(%0A%09cust_id+int%2C+%0A%09balance_ccy+symbol%2C+%0A%09balance+double%2C+%0A%09status+byte%2C+%0A%09timestamp+timestamp%0A)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0A%0Acreate+table+balances_x+(%0A%09cust_id+int%2C+%0A%09balance_ccy+symbol%2C+%0A%09balance+double%2C+%0A%09status+byte%2C+%0A%09timestamp+timestamp%0A)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -1902,7 +1902,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -1925,7 +1925,7 @@ public class IODispatcherTest {
             // insert one record
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0Ainsert+into+balances_x+(cust_id%2C+balance_ccy%2C+balance%2C+timestamp)+values+(1%2C+%27USD%27%2C+1500.00%2C+6000000001)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0Ainsert+into+balances_x+(cust_id%2C+balance_ccy%2C+balance%2C+timestamp)+values+(1%2C+%27USD%27%2C+1500.00%2C+6000000001)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -1933,7 +1933,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -1956,7 +1956,7 @@ public class IODispatcherTest {
             // check if we have one record
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0Aselect+*+from+balances_x+latest+by+cust_id%2C+balance_ccy&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0Aselect+*+from+balances_x+latest+by+cust_id%2C+balance_ccy&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -1964,7 +1964,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -1987,7 +1987,7 @@ public class IODispatcherTest {
             // truncate table
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0Atruncate+table+balances_x&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0Atruncate+table+balances_x&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -1995,7 +1995,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -2018,7 +2018,7 @@ public class IODispatcherTest {
             // select again expecting only metadata
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0Aselect+*+from+balances_x+latest+by+cust_id%2C+balance_ccy&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0Aselect+*+from+balances_x+latest+by+cust_id%2C+balance_ccy&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -2026,7 +2026,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -2052,7 +2052,7 @@ public class IODispatcherTest {
     public void testJsonQueryCreateTable() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=%0A%0A%0Acreate+table+balances_x+(%0A%09cust_id+int%2C+%0A%09balance_ccy+symbol%2C+%0A%09balance+double%2C+%0A%09status+byte%2C+%0A%09timestamp+timestamp%0A)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                "GET /some/query?query=%0A%0A%0Acreate+table+balances_x+(%0A%09cust_id+int%2C+%0A%09balance_ccy+symbol%2C+%0A%09balance+double%2C+%0A%09status+byte%2C+%0A%09timestamp+timestamp%0A)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -2060,7 +2060,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "\r\n",
@@ -2205,7 +2205,7 @@ public class IODispatcherTest {
     public void testJsonQueryDropTable() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=drop%20table%20x HTTP/1.1\r\n" +
+                "GET /some/query?query=drop%20table%20x HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2232,7 +2232,7 @@ public class IODispatcherTest {
 
     @Test
     public void testJsonQueryEmptyColumnNameInLimitColumns() throws Exception {
-        testJsonQuery(20, "GET /query?query=x&cols=k,c,,d,f1,e,g,h,i,j,a,l HTTP/1.1\r\n" +
+        testJsonQuery(20, "GET /some/query?query=x&cols=k,c,,d,f1,e,g,h,i,j,a,l HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2258,7 +2258,7 @@ public class IODispatcherTest {
     public void testJsonQueryEmptyText() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query= HTTP/1.1\r\n" +
+                "GET /some/query?query= HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2286,7 +2286,7 @@ public class IODispatcherTest {
     public void testJsonQueryInfinity() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=select+1.0%2F0.0+from+long_sequence(1)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
+                "GET /some/query?query=select+1.0%2F0.0+from+long_sequence(1)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -2294,7 +2294,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: _ga=GA1.1.2124932001.1573824669; _gid=GA1.1.2057572436.1581161560\r\n" +
@@ -2315,7 +2315,7 @@ public class IODispatcherTest {
 
     @Test
     public void testJsonQueryInvalidColumnNameInLimitColumns() throws Exception {
-        testJsonQuery(20, "GET /query?query=x&cols=k,c,b,d,f1,e,g,h,i,j,a,l HTTP/1.1\r\n" +
+        testJsonQuery(20, "GET /some/query?query=x&cols=k,c,b,d,f1,e,g,h,i,j,a,l HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2339,7 +2339,7 @@ public class IODispatcherTest {
 
     @Test
     public void testJsonQueryInvalidLastColumnNameInLimitColumns() throws Exception {
-        testJsonQuery(20, "GET /query?query=x&cols=k,c,b,d,f,e,g,h,i,j,a,l2 HTTP/1.1\r\n" +
+        testJsonQuery(20, "GET /some/query?query=x&cols=k,c,b,d,f,e,g,h,i,j,a,l2 HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2371,7 +2371,7 @@ public class IODispatcherTest {
             );
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=y HTTP/1.1\r\n" +
+                    "GET /some/query?query=y HTTP/1.1\r\n" +
                             "Host: localhost:9001\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Cache-Control: max-age=0\r\n" +
@@ -2403,7 +2403,7 @@ public class IODispatcherTest {
     public void testJsonQueryLimitColumnsBadUtf8() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=select+%27oops%27+%D1%80%D0%B5%D0%BA%D0%BE%D1%80%D0%B4%D0%BD%D0%BE+from+long_sequence(10)%0A&count=false&cols=�������&src=vis HTTP/1.1\r\n" +
+                "GET /some/query?query=select+%27oops%27+%D1%80%D0%B5%D0%BA%D0%BE%D1%80%D0%B4%D0%BD%D0%BE+from+long_sequence(10)%0A&count=false&cols=�������&src=vis HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -2411,7 +2411,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: _ga=GA1.1.2124932001.1573824669; _gid=GA1.1.1731187971.1580598042\r\n" +
@@ -2433,7 +2433,7 @@ public class IODispatcherTest {
     public void testJsonQueryLimitColumnsUtf8() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=select+%27oops%27+%D1%80%D0%B5%D0%BA%D0%BE%D1%80%D0%B4%D0%BD%D0%BE+from+long_sequence(10)%0A&count=false&cols=%D1%80%D0%B5%D0%BA%D0%BE%D1%80%D0%B4%D0%BD%D0%BE&src=vis HTTP/1.1\r\n" +
+                "GET /some/query?query=select+%27oops%27+%D1%80%D0%B5%D0%BA%D0%BE%D1%80%D0%B4%D0%BD%D0%BE+from+long_sequence(10)%0A&count=false&cols=%D1%80%D0%B5%D0%BA%D0%BE%D1%80%D0%B4%D0%BD%D0%BE&src=vis HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -2441,7 +2441,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: _ga=GA1.1.2124932001.1573824669; _gid=GA1.1.1731187971.1580598042\r\n" +
@@ -2464,7 +2464,7 @@ public class IODispatcherTest {
     public void testJsonQueryMiddleLimit() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x&limit=10,14 HTTP/1.1\r\n" +
+                "GET /some/query?query=x&limit=10,14 HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2492,7 +2492,7 @@ public class IODispatcherTest {
     public void testJsonQueryMiddleLimitNoMeta() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x&limit=10,14&nm=true HTTP/1.1\r\n" +
+                "GET /some/query?query=x&limit=10,14&nm=true HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2520,7 +2520,7 @@ public class IODispatcherTest {
     public void testJsonQueryMultipleRows() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x HTTP/1.1\r\n" +
+                "GET /some/query?query=x HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2548,7 +2548,7 @@ public class IODispatcherTest {
     public void testJsonQueryMultipleRowsFiltered() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=%0A%0Aselect+*+from+x+where+i+~%3D+%27E%27&limit=1,1&count=true HTTP/1.1\r\n" +
+                "GET /some/query?query=%0A%0Aselect+*+from+x+where+i+~%3D+%27E%27&limit=1,1&count=true HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2576,7 +2576,7 @@ public class IODispatcherTest {
     public void testJsonQueryMultipleRowsLimitColumns() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x&cols=k,c,b,d,f,e,g,h,i,j,a,l HTTP/1.1\r\n" +
+                "GET /some/query?query=x&cols=k,c,b,d,f,e,g,h,i,j,a,l HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2604,7 +2604,7 @@ public class IODispatcherTest {
     public void testJsonQueryOutsideLimit() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x&limit=35,40 HTTP/1.1\r\n" +
+                "GET /some/query?query=x&limit=35,40 HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2632,7 +2632,7 @@ public class IODispatcherTest {
     public void testJsonQueryPseudoRandomStability() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=select+rnd_symbol(%27a%27%2C%27b%27%2C%27c%27)+sym+from+long_sequence(10%2C+33%2C+55)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
+                "GET /some/query?query=select+rnd_symbol(%27a%27%2C%27b%27%2C%27c%27)+sym+from+long_sequence(10%2C+33%2C+55)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2669,7 +2669,7 @@ public class IODispatcherTest {
             // rename x -> y (quoted)
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=rename+table+%27x%27+to+%27y%27&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=rename+table+%27x%27+to+%27y%27&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9001\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Cache-Control: max-age=0\r\n" +
@@ -2698,7 +2698,7 @@ public class IODispatcherTest {
             // query new table name
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=y%20where%20i%20%3D%20(%27EHNRX%27) HTTP/1.1\r\n" +
+                    "GET /some/query?query=y%20where%20i%20%3D%20(%27EHNRX%27) HTTP/1.1\r\n" +
                             "Host: localhost:9001\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Cache-Control: max-age=0\r\n" +
@@ -2727,7 +2727,7 @@ public class IODispatcherTest {
             // rename y -> x (unquoted)
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=rename+table+y+to+x&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=rename+table+y+to+x&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9001\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Cache-Control: max-age=0\r\n" +
@@ -2756,7 +2756,7 @@ public class IODispatcherTest {
             // query table 'x'
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=x%20where%20i%20%3D%20(%27EHNRX%27) HTTP/1.1\r\n" +
+                    "GET /some/query?query=x%20where%20i%20%3D%20(%27EHNRX%27) HTTP/1.1\r\n" +
                             "Host: localhost:9001\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Cache-Control: max-age=0\r\n" +
@@ -2789,7 +2789,7 @@ public class IODispatcherTest {
         configuredMaxQueryResponseRowLimit = 2;
         testJsonQuery(
                 20,
-                "GET /query?query=x&limit=10,14 HTTP/1.1\r\n" +
+                "GET /some/query?query=x&limit=10,14 HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -2819,7 +2819,7 @@ public class IODispatcherTest {
             // create table
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0A%0Acreate+table+balances_x+(%0A%09cust_id+int%2C+%0A%09balance_ccy+symbol%2C+%0A%09balance+double%2C+%0A%09status+byte%2C+%0A%09timestamp+timestamp%0A)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0A%0Acreate+table+balances_x+(%0A%09cust_id+int%2C+%0A%09balance_ccy+symbol%2C+%0A%09balance+double%2C+%0A%09status+byte%2C+%0A%09timestamp+timestamp%0A)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -2827,7 +2827,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -2850,7 +2850,7 @@ public class IODispatcherTest {
             // insert one record
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0Ainsert+into+balances_x+(cust_id%2C+balance_ccy%2C+balance%2C+timestamp)+values+(1%2C+%27USD%27%2C+1500.00%2C+6000000001)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0Ainsert+into+balances_x+(cust_id%2C+balance_ccy%2C+balance%2C+timestamp)+values+(1%2C+%27USD%27%2C+1500.00%2C+6000000001)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -2858,7 +2858,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -2881,7 +2881,7 @@ public class IODispatcherTest {
             // check if we have one record
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0Aselect+*+from+balances_x+latest+by+cust_id%2C+balance_ccy&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0Aselect+*+from+balances_x+latest+by+cust_id%2C+balance_ccy&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -2889,7 +2889,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -2912,7 +2912,7 @@ public class IODispatcherTest {
             // add column
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=alter+table+balances_x+add+column+xyz+int&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=alter+table+balances_x+add+column+xyz+int&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:13005\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -2920,7 +2920,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:13005/index.html\r\n" +
+                            "Referer: http://localhost:13005/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -2943,7 +2943,7 @@ public class IODispatcherTest {
             // select again expecting only metadata
             sendAndReceive(
                     NetworkFacadeImpl.INSTANCE,
-                    "GET /query?query=%0A%0Aselect+*+from+balances_x+latest+by+cust_id%2C+balance_ccy&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                    "GET /some/query?query=%0A%0Aselect+*+from+balances_x+latest+by+cust_id%2C+balance_ccy&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                             "Host: localhost:9000\r\n" +
                             "Connection: keep-alive\r\n" +
                             "Accept: */*\r\n" +
@@ -2951,7 +2951,7 @@ public class IODispatcherTest {
                             "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36\r\n" +
                             "Sec-Fetch-Site: same-origin\r\n" +
                             "Sec-Fetch-Mode: cors\r\n" +
-                            "Referer: http://localhost:9000/index.html\r\n" +
+                            "Referer: http://localhost:9000/some/index.html\r\n" +
                             "Accept-Encoding: gzip, deflate, br\r\n" +
                             "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                             "\r\n",
@@ -2977,7 +2977,7 @@ public class IODispatcherTest {
     public void testJsonQuerySingleRow() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x%20where%20i%20%3D%20(%27EHNRX%27) HTTP/1.1\r\n" +
+                "GET /some/query?query=x%20where%20i%20%3D%20(%27EHNRX%27) HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -3005,7 +3005,7 @@ public class IODispatcherTest {
     public void testJsonQueryStoresTelemetryEvent() throws Exception {
         testJsonQuery(
                 0,
-                "GET /query?query=x HTTP/1.1\r\n" +
+                "GET /some/query?query=x HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -3045,7 +3045,7 @@ public class IODispatcherTest {
     public void testJsonQueryStoresTelemetryEventWhenCached() throws Exception {
         testJsonQuery(
                 0,
-                "GET /query?query=x HTTP/1.1\r\n" +
+                "GET /some/query?query=x HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -3134,7 +3134,7 @@ public class IODispatcherTest {
 
                     @Override
                     public String getUrl() {
-                        return "/query";
+                        return httpConfiguration.getPathPrefix() + "query";
                     }
                 });
 
@@ -3148,7 +3148,7 @@ public class IODispatcherTest {
                         new TestRecord.ArrayBinarySequence());
 
                 // send multipart request to server
-                final String request = "GET /query?query=x%20where2%20i%20%3D%20(%27EHNRX%27) HTTP/1.1\r\n" +
+                final String request = "GET /some/query?query=x%20where2%20i%20%3D%20(%27EHNRX%27) HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -3189,7 +3189,7 @@ public class IODispatcherTest {
     public void testJsonQueryTopLimit() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x&limit=10 HTTP/1.1\r\n" +
+                "GET /some/query?query=x&limit=10 HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -3217,7 +3217,7 @@ public class IODispatcherTest {
     public void testJsonQueryTopLimitAndCount() throws Exception {
         testJsonQuery(
                 20,
-                "GET /query?query=x&limit=10&count=true HTTP/1.1\r\n" +
+                "GET /some/query?query=x&limit=10&count=true HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -3253,7 +3253,7 @@ public class IODispatcherTest {
                     );
                     sendAndReceive(
                             NetworkFacadeImpl.INSTANCE,
-                            "GET /query?query=x&limit=10 HTTP/1.1\r\n" +
+                            "GET /some/query?query=x&limit=10 HTTP/1.1\r\n" +
                                     "Host: localhost:9001\r\n" +
                                     "Connection: keep-alive\r\n" +
                                     "Cache-Control: max-age=0\r\n" +
@@ -3423,7 +3423,7 @@ public class IODispatcherTest {
     public void testJsonQueryZeroRows() throws Exception {
         testJsonQuery(
                 0,
-                "GET /query?query=x HTTP/1.1\r\n" +
+                "GET /some/query?query=x HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -3449,7 +3449,7 @@ public class IODispatcherTest {
 
     @Test
     public void testJsonUtf8EncodedColumnName() throws Exception {
-        testJsonQuery(0, "GET /query?query=select+0+%D1%80%D0%B5%D0%BA%D0%BE%D1%80%D0%B4%D0%BD%D0%BE+from+long_sequence(10)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
+        testJsonQuery(0, "GET /some/query?query=select+0+%D1%80%D0%B5%D0%BA%D0%BE%D1%80%D0%B4%D0%BD%D0%BE+from+long_sequence(10)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
                         "Host: localhost:9000\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -3457,7 +3457,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:9000/index.html\r\n" +
+                        "Referer: http://localhost:9000/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: _ga=GA1.1.2124932001.1573824669; _gid=GA1.1.392867896.1580123365\r\n" +
@@ -3480,7 +3480,7 @@ public class IODispatcherTest {
     public void testJsonUtf8EncodedQuery() throws Exception {
         testJsonQuery(
                 0,
-                "GET /query?query=%0A%0A%0A%0ASELECT+%27Rapha%C3%ABl%27+a%2C+%27L%C3%A9o%27+b+FROM+long_sequence(2)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
+                "GET /some/query?query=%0A%0A%0A%0ASELECT+%27Rapha%C3%ABl%27+a%2C+%27L%C3%A9o%27+b+FROM+long_sequence(2)&limit=0%2C1000&count=true HTTP/1.1\r\n" +
                         "Host: localhost:13005\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Accept: */*\r\n" +
@@ -3488,7 +3488,7 @@ public class IODispatcherTest {
                         "User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36\r\n" +
                         "Sec-Fetch-Site: same-origin\r\n" +
                         "Sec-Fetch-Mode: cors\r\n" +
-                        "Referer: http://localhost:13005/index.html\r\n" +
+                        "Referer: http://localhost:13005/some/index.html\r\n" +
                         "Accept-Encoding: gzip, deflate, br\r\n" +
                         "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8\r\n" +
                         "Cookie: ajs_group_id=null; ajs_anonymous_id=%22870b530ab5ce462f4545099f85657346%22; ajs_user_id=%22870b530ab5ce462f4545099f85657346%22; _ga=GA1.1.1909943241.1573659694\r\n" +
@@ -4123,7 +4123,7 @@ public class IODispatcherTest {
     public void testSCPHttp10() throws Exception {
         assertMemoryLeak(() -> {
             final String baseDir = temp.getRoot().getAbsolutePath();
-            final DefaultHttpServerConfiguration httpConfiguration = createHttpServerConfiguration(NetworkFacadeImpl.INSTANCE, baseDir, 16 * 1024, false, false, false, "HTTP/1.0 ");
+            final DefaultHttpServerConfiguration httpConfiguration = createHttpServerConfiguration(NetworkFacadeImpl.INSTANCE, baseDir, 16 * 1024, false, false, false, "HTTP/1.0 ", "/some/");
             final WorkerPool workerPool = new WorkerPool(new WorkerPoolConfiguration() {
                 @Override
                 public int[] getWorkerAffinity() {
@@ -4795,7 +4795,7 @@ public class IODispatcherTest {
     public void testTextQueryPseudoRandomStability() throws Exception {
         testJsonQuery(
                 20,
-                "GET /exp?query=select+rnd_symbol(%27a%27%2C%27b%27%2C%27c%27)+sym+from+long_sequence(10%2C+33%2C+55)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
+                "GET /some/exp?query=select+rnd_symbol(%27a%27%2C%27b%27%2C%27c%27)+sym+from+long_sequence(10%2C+33%2C+55)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -4836,7 +4836,7 @@ public class IODispatcherTest {
         configuredMaxQueryResponseRowLimit = 3;
         testJsonQuery(
                 20,
-                "GET /exp?query=select+rnd_symbol(%27a%27%2C%27b%27%2C%27c%27)+sym+from+long_sequence(10%2C+33%2C+55)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
+                "GET /some/exp?query=select+rnd_symbol(%27a%27%2C%27b%27%2C%27c%27)+sym+from+long_sequence(10%2C+33%2C+55)&limit=0%2C1000&count=true&src=con HTTP/1.1\r\n" +
                         "Host: localhost:9001\r\n" +
                         "Connection: keep-alive\r\n" +
                         "Cache-Control: max-age=0\r\n" +
@@ -5127,7 +5127,7 @@ public class IODispatcherTest {
             boolean dumpTraffic,
             boolean allowDeflateBeforeSend
     ) {
-        return createHttpServerConfiguration(nf, baseDir, sendBufferSize, dumpTraffic, allowDeflateBeforeSend, true, "HTTP/1.1 ");
+        return createHttpServerConfiguration(nf, baseDir, sendBufferSize, dumpTraffic, allowDeflateBeforeSend, true, "HTTP/1.1 ", "/some/");
     }
 
     @NotNull
@@ -5138,7 +5138,8 @@ public class IODispatcherTest {
             boolean dumpTraffic,
             boolean allowDeflateBeforeSend,
             boolean serverKeepAlive,
-            String httpProtocolVersion
+            String httpProtocolVersion,
+            String httpPathPrefix
     ) {
         final IODispatcherConfiguration ioDispatcherConfiguration = new DefaultIODispatcherConfiguration() {
             @Override
@@ -5255,6 +5256,11 @@ public class IODispatcherTest {
             @Override
             public String getHttpVersion() {
                 return httpProtocolVersion;
+            }
+
+            @Override
+            public String getPathPrefix() {
+                return httpPathPrefix;
             }
         };
     }
@@ -5406,7 +5412,7 @@ public class IODispatcherTest {
         assertMemoryLeak(() -> {
             final String baseDir = temp.getRoot().getAbsolutePath();
             final DefaultHttpServerConfiguration httpConfiguration = createHttpServerConfiguration(NetworkFacadeImpl.INSTANCE, baseDir, 16 * 1024, false, false,
-                    !http1, http1 ? "HTTP/1.0 " : "HTTP/1.1 ");
+                    !http1, http1 ? "HTTP/1.0 " : "HTTP/1.1 ", "/some/");
             final WorkerPool workerPool = new WorkerPool(new WorkerPoolConfiguration() {
                 @Override
                 public int[] getWorkerAffinity() {
@@ -5460,7 +5466,7 @@ public class IODispatcherTest {
 
                     @Override
                     public String getUrl() {
-                        return "/query";
+                        return httpConfiguration.getPathPrefix() + "query";
                     }
                 });
 
@@ -5477,7 +5483,7 @@ public class IODispatcherTest {
 
                     @Override
                     public String getUrl() {
-                        return "/exp";
+                        return httpConfiguration.getPathPrefix() + "exp";
                     }
                 });
 
@@ -5490,7 +5496,7 @@ public class IODispatcherTest {
 
                     @Override
                     public String getUrl() {
-                        return "/chk";
+                        return httpConfiguration.getPathPrefix() + "chk";
                     }
                 });
 

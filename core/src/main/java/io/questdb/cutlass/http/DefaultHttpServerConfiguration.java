@@ -245,4 +245,9 @@ public class DefaultHttpServerConfiguration implements HttpServerConfiguration {
         // trailing space is important
         return "HTTP/1.1 ";
     }
+
+    @Override
+    public String getPathPrefix() {
+        return "/";
+    }
 }
