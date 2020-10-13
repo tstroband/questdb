@@ -22,7 +22,7 @@ export function toExportUrl(query) {
     window.location.protocol +
     "//" +
     window.location.host +
-    "/exp?query=" +
+    "/exp?query=" +       // TODO path prefix exp
     encodeURIComponent(query)
   )
 }

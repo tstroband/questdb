@@ -59,7 +59,7 @@ const devLoaders = [
 ]
 
 const prodPlugins = [
-  new CopyWebpackPlugin({ patterns: [{ from: "./assets/", to: "assets/" }] }),
+  new CopyWebpackPlugin({ patterns: [{ from: "./assets/", to: "assets/" }] }),  // TODO path prefix assets
 ]
 
 module.exports = {
@@ -73,7 +73,7 @@ module.exports = {
     },
     port: PORT,
     proxy: {
-      context: ["/imp", "/exp", "/exec", "/chk"],
+      context: ["/imp", "/exp", "/exec", "/chk"],   // TODO path prefix imp, exp, exec, chk
       target: `http://localhost:${BACKEND_PORT}/`,
     },
   },

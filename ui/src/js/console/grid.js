@@ -172,7 +172,7 @@ $.fn.grid = function (msgBus) {
       renderViewportNoCompute()
       return
     }
-    $.get("/exec", { query, limit: lo + "," + hi, nm: true }).done(f)
+    $.get("/exec", { query, limit: lo + "," + hi, nm: true }).done(f)  // TODO path prefix exec
   }
 
   function loadPagesDelayed(p1, p2) {

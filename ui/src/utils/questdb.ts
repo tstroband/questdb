@@ -87,7 +87,7 @@ export class Client {
 
   constructor(host?: string) {
     if (!host) {
-      this._host = window.location.origin
+      this._host = window.location.origin  // TODO path prefix host
     } else {
       this._host = host
     }
@@ -158,7 +158,7 @@ export class Client {
 
     try {
       response = await fetch(
-        `${this._host}/exec?${Client.encodeParams(payload)}`,
+        `${this._host}/exec?${Client.encodeParams(payload)}`,  // TODO path prefix exec
         { signal: controller.signal },
       )
     } catch (error) {

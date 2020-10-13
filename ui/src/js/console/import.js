@@ -168,7 +168,7 @@ $.fn.importManager = function (editorBus) {
 
   const importRequest = {
     xhr: setupUploadProgressCallback,
-    url: "/imp?fmt=json",
+    url: "/imp?fmt=json",   // TODO path prefix imp
     type: "POST",
     contentType: false,
     processData: false,
@@ -375,7 +375,7 @@ $.fn.importManager = function (editorBus) {
   }
 
   function setupImportRequest() {
-    importRequest.url = "/imp?fmt=json"
+    importRequest.url = "/imp?fmt=json"    // TODO path prefix imp
 
     if (current.retry === ACTION_OVERWRITE) {
       importRequest.url += "&overwrite=true"
@@ -472,7 +472,7 @@ $.fn.importManager = function (editorBus) {
       current.importState = 0
       sendImportRequest()
     } else {
-      existenceCheckRequest.url = "/chk?f=json&j=" + encodeURIComponent(e.name)
+      existenceCheckRequest.url = "/chk?f=json&j=" + encodeURIComponent(e.name)   // TODO path prefix chk
       $.ajax(existenceCheckRequest).then(existenceCheckFork).fail(importFailed)
     }
   }

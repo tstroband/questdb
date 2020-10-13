@@ -264,7 +264,7 @@ $.fn.quickVis = function (msgBus) {
       requestParams.src = "vis"
       // time the query because control that displays query success expected time delta
       queryExecutionTimestamp = new Date().getTime()
-      hActiveRequest = $.get("/exec", requestParams)
+      hActiveRequest = $.get("/exec", requestParams) // TODO path prefix exec
       bus.trigger(qdb.MSG_QUERY_RUNNING)
       hActiveRequest.done(handleServerResponse).fail(handleServerError)
     }
